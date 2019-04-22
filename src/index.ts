@@ -6,7 +6,7 @@ import { useContext, useCallback, useMemo, createContext } from 'react';
 import { useDispatch, useMappedState } from 'redux-react-hook';
 import { Map } from 'immutable';
 
-import { APIClient, substituteParams } from './actions';
+import { APIClient, substituteParams, resetState } from './actions';
 
 import { AuthStrategy, HttpMethod, SubstitutionObject } from './types';
 import { AuthContext } from './auth';
@@ -20,7 +20,8 @@ export function useAPI<T>(url: string, substitutions: SubstitutionObject = {}, m
   const client: APIClient<T> = useMemo(() => new APIClient<T>(url, key, method, substitutions, auth), [url, key, method, substitutions]);
   const doRequest = (body, force = false, timeout = DETAULT_TIMEOUT) => dispatch(client.request(force, timeout, body));
   const data = useMappedState(useCallback(state => state.api.get(`${client.getKey()}:${client.getMethod()}`, Map({})).toJS(), [substitutedKey, method]));
-  return [data, doRequest];
+  const resetStateAPI = () => dispatch(resetState(client.getUrl(), method));
+  return [data, doRequest, resetStateAPI];
 }
 
 export { default as ApiReducer } from './reducer';

@@ -41,6 +41,10 @@ export class APIClient<T> {
     return this.method;
   }
 
+  getUrl() {
+    return this.url;
+  }
+
   request<T>(force: boolean = false, timeout: number = DEFAULT_TIMEOUT, body?: any): (d: Function, g: Function) => Promise<T | undefined> {
     return async (dispatch: Function, getState: Function): Promise<T | undefined> => {
       dispatch(startFetch(this.key, this.method, Date.now() + timeout));
