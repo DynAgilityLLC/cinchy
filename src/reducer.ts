@@ -22,11 +22,11 @@ actionHandlers[FETCH_URL_START] = (state: Map<string, any>, { key, method, timeo
 
 actionHandlers[FETCH_URL_SUCCESS] = (state: Map<string, any>, { key, method, result }): Map<string, any> => {
   const data = Array.isArray(result) ? List(result) : Map(result);
-  return state.setIn([`${key}:${method}`, 'requesting'], false).setIn([`${key}:${method}`, 'data'], data);
+  return state.setIn([`${key}:${method}`, 'requesting'], false).setIn([`${key}:${method}`, 'data'], data).setIn([`${key}:${method}`, 'statuscode'], result.statuscode);
 };
 
 actionHandlers[FETCH_URL_FAILED] = (state: Map<string, any>, { key, method, error }: APIFetchAction): Map<string, any> =>
-  state.setIn([`${key}:${method}`, 'requesting'], false).removeIn([`${key}:${method}`, 'data']).setIn([`${key}:${method}`, 'error'], error);
+  state.setIn([`${key}:${method}`, 'requesting'], false).removeIn([`${key}:${method}`, 'data']).setIn([`${key}:${method}`, 'error'], error).setIn([`${key}:${method}`, 'statuscode'], error.statuscode);
 
 actionHandlers[FETCH_URL_RESET] = (state: Map<string, any>, { key, method }: APIFetchAction) => state.remove(`${key}:${method}`);
 
