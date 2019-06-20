@@ -54,20 +54,22 @@ export class APIClient<T> {
         while (initial === true || retry === true) {
           // After the initial run, only run again if retry is true.
           initial = false;
-
+          retry = false;
           const requestOptions = this.authStrategy.getRequestOptions(this.method, body);
           const request = await fetch(this.url, requestOptions);
-          response = await request.json();
-          response.statuscode = request.status;
           if (request.status > 299) {
-            if (response.status === 401) {
+            if (request.status === 401) {
               retry = await this.authStrategy.onUnauthorized(dispatch, getState, request);
-            } else if (response.status === 403) {
+            } else if (request.status === 403) {
               retry = await this.authStrategy.onForbidden(dispatch, getState, request);
             } else {
+              response = await request.json();
+              response.statuscode = request.status;
               dispatch(failFetch(this.key, this.method, response));
             }
           } else {
+            response = await request.json();
+            response.statuscode = request.status;
             dispatch(successFetch(this.key, this.method, response));
           }
         }
