@@ -75,7 +75,7 @@ export class APIClient<T> {
         }
         return response;
       } catch (e) {
-        dispatch(failFetch(this.key, this.method, e));
+        await this.authStrategy.onUnauthorized(dispatch, getState, e);
       }
     };
   }
