@@ -16,8 +16,8 @@ const DEFAULT_TIMEOUT = 60000; // One Minute
 export const substituteParams = (str: string, params: { [key: string]: string } | undefined ): string => (params !== undefined ? Object.keys(params).reduce((current, key) => current.replace(`{${key}}`, params[key]), str) : str);
 
 const startFetch = (key: string, method: string, timeout: number): APIFetchAction => ({ type: FETCH_URL_START, key, method, timeout });
-const successFetch = (key: string, method: string, result: any): APIFetchAction => ({ type: FETCH_URL_SUCCESS, key, method, result });
-const failFetch = (key: string, method: string, error: any): APIFetchAction => ({ type: FETCH_URL_FAILED, key, method, error });
+const successFetch = (key: string, method: string, result: any, statusCode: any): APIFetchAction => ({ type: FETCH_URL_SUCCESS, key, method, result, statusCode });
+const failFetch = (key: string, method: string, error: any, statusCode: any): APIFetchAction => ({ type: FETCH_URL_FAILED, key, method, error, statusCode });
 export const resetState = (key: string, method: string): APIFetchAction => ({ type: FETCH_URL_RESET, key, method });
 
 export class APIClient<T> {
@@ -68,13 +68,11 @@ export class APIClient<T> {
               retry = await this.authStrategy.onForbidden(dispatch, getState, request);
             } else {
               response = await request.json();
-              response.statuscode = request.status;
-              dispatch(failFetch(this.key, this.method, response));
+              dispatch(failFetch(this.key, this.method, response, request.status));
             }
           } else {
             response = await request.json();
-            response.statuscode = request.status;
-            dispatch(successFetch(this.key, this.method, response));
+            dispatch(successFetch(this.key, this.method, response, request.status));
           }
         }
         return response;

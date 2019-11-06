@@ -16,6 +16,7 @@ export interface APIFetchAction {
   timeout?: number;
   error?: any;
   result?: any;
+  statusCode?: any;
 }
 
 export interface AuthAction {
