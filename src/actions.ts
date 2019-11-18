@@ -71,7 +71,12 @@ export class APIClient<T> {
               dispatch(failFetch(this.key, this.method, response, request.status));
             }
           } else {
-            response = await request.json();
+            if (request.redirected && request.statusText === '') {
+              response.url = request.url;
+              response.statuscode = request.status;
+            } else {
+              response = await request.json();
+            }
             dispatch(successFetch(this.key, this.method, response, request.status));
           }
         }
